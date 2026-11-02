@@ -157,7 +157,6 @@
   {
    "id": "g-Étapes suivantes",
    "label": "Législation",
-   "discret": true,
    "kids": [
     {
      "id": "g-Clients et marché",
