@@ -466,7 +466,7 @@ function box(n,parent,onPath){
  b.style.borderStyle=n.sugg?"dashed":"solid";b.style.borderColor=on?"var(--bds)":"var(--bd)";
  b.style.background=colOf(n)||(last?"var(--f2)":"transparent");
  b.style.color=colOf(n)?"#222":(quiet?"var(--t3)":"var(--t1)");b.style.opacity=dead?.5:1;b.style.fontWeight=on?600:400;
- b.addEventListener("click",function(){if(edit)return;menu=null;if(sel===n.id)setSel(parent?parent.id:null);else setSel(n.id);render()});
+ b.addEventListener("click",function(){if(edit)return;menu=null;if(on)setSel(parent?parent.id:null);else setSel(n.id);render()});
  b.addEventListener("pointerdown",function(){timer=setTimeout(function(){menu=n.id;render()},550)});
  ["pointerup","pointerleave"].forEach(function(t){b.addEventListener(t,function(){clearTimeout(timer)})});
  b.addEventListener("contextmenu",function(e){e.preventDefault()});
