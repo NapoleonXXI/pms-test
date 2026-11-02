@@ -5,7 +5,7 @@
 html,body{margin:0;background:var(--bg);min-height:100%;-webkit-text-size-adjust:100%}
 #app{background:var(--bg);padding:20px 16px 120px;box-sizing:border-box;font-family:var(--font)}
 .sm{font-size:12px;color:var(--t3);font-family:var(--font)}
-.bar{position:sticky;top:0;background:var(--bg);padding:6px 0 14px;z-index:5;display:flex;flex-wrap:wrap;gap:4px;min-height:18px}
+.bar{position:sticky;top:0;background:var(--bg);padding:6px 0 14px;z-index:5;display:flex;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px;min-height:18px}.bar::-webkit-scrollbar{display:none}.bar span{flex:none}
 .bar span{cursor:pointer}
 .rows{display:flex;flex-direction:column;gap:18px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
@@ -494,7 +494,7 @@ function render(){
  var path=sel?(pathTo(tree,sel)||[]):[],onPath={};path.forEach(function(p){onPath[p.id]=1});
  app.textContent="";
  var bar=h("div","sm bar");path.forEach(function(p,i){var s=h("span",null,(i?"› ":"")+p.label);if(p.etat==="impasse")s.style.textDecoration="line-through";s.addEventListener("click",function(e){e.stopPropagation();setSel(p.id);render()});bar.appendChild(s)});
- app.appendChild(bar);
+ app.appendChild(bar);bar.scrollLeft=bar.scrollWidth;
  var rows=h("div","rows");rows.addEventListener("click",function(e){e.stopPropagation()});
  var rs=[{items:[tree],parent:null}];path.forEach(function(p){if(p.kids.length)rs.push({items:p.kids,parent:p})});
  rs.forEach(function(r,i){var row=h("div","row");row.style.paddingLeft=Math.min(i,4)*12+"px";r.items.forEach(function(n){row.appendChild(box(n,r.parent,onPath))});rows.appendChild(row)});
