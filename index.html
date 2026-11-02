@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Préparation du projet</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Application web pour gestionnaire et professionnel de l'hôtellerie et du tourisme</title>
 <style>
 :root{--bg:#FFFFFF;--elev:#FFFFFF;--t1:#1A1A1A;--t3:#8A8A8A;--bd:#E4E4E4;--bds:#9A9A9A;--f2:#F0F0F0;--acc:#EAF0FF;--font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 @media (prefers-color-scheme:dark){:root{--bg:#121212;--elev:#1E1E1E;--t1:#EDEDED;--t3:#8A8A8A;--bd:#333;--bds:#777;--f2:#262626;--acc:#1C2640}}
@@ -503,10 +503,19 @@ function apply(d){var old=sel?(pathTo(tree||{id:"",kids:[]},sel)||[]):[];tree=no
  render()}
 function busy(){return !!(edit||menu)}
 function flush(){if(pending&&!busy()){var t=pending;pending=null;lastTxt=t;apply(JSON.parse(t))}}
-function load(){fetch("tree.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
- if(t===lastTxt)return;JSON.parse(t);if(busy()){pending=t;return}lastTxt=t;pending=null;apply(JSON.parse(t))
-}).catch(function(){if(!tree)apply(JSON.parse(JSON.stringify(FALLBACK)))})}
-load();setInterval(load,3000);
+var API="https://api.github.com/repos/NapoleonXXI/preparation-du-projet/contents/tree.json?ref=main",etag=null,slowUntil=0,tm=null;
+function got(t){if(t===lastTxt)return;JSON.parse(t);if(busy()){pending=t;return}lastTxt=t;pending=null;apply(JSON.parse(t))}
+function local(){return fetch("tree.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.text()}).then(got).catch(function(){if(!tree)apply(JSON.parse(JSON.stringify(FALLBACK)))})}
+function load(){var p;
+ if(Date.now()<slowUntil)p=local();
+ else{var hd={"Accept":"application/vnd.github.raw+json"};if(etag)hd["If-None-Match"]=etag;
+  p=fetch(API,{cache:"no-store",headers:hd}).then(function(r){
+   if(r.status===304)return;
+   if(r.status===403||r.status===429||!r.ok){slowUntil=Date.now()+5*60000;return local()}
+   etag=r.headers.get("ETag")||etag;return r.text().then(got)
+  }).catch(function(){slowUntil=Date.now()+5*60000;return local()})}
+ p.then(function(){},function(){}).then(function(){tm=setTimeout(load,Date.now()<slowUntil?30000:3000)})}
+load();
 window.arbreState=function(){return{sel:sel,path:(sel?(pathTo(tree,sel)||[]):[]).map(function(p){return p.id})}};
 })();
 </script></body></html>
