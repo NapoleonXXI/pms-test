@@ -11,8 +11,8 @@
 <script>
 var S;
 function init(){var L=[];for(var i=1;i<=20;i++){var t=i<=8?["Chambre double",2,90]:i<=14?["Chambre familiale",4,130]:i<=18?["Mobile home",6,160]:["Suite",2,210];L.push({n:i,type:t[0],cap:t[1],prix:t[2],etat:"Propre"})}
-S={L:L,C:[["Garcia","Céline","celine.garcia@exemple.fr"],["Martin","Paul","paul.martin@exemple.fr"],["Dubois","Léa","lea.dubois@exemple.fr"],["Bernard","Hugo","hugo.bernard@exemple.fr"],["Petit","Emma","emma.petit@exemple.fr"]].map(function(c,i){return{id:i+1,nom:c[0],prenom:c[1],mail:c[2]}}),R:[],J:[],k:1};save()}
-function save(){localStorage.pmsTest=JSON.stringify(S)}
+S={L:L,C:[["Garcia","Céline","celine.garcia@exemple.fr","06 11 22 33 01","Chambre calme"],["Martin","Paul","paul.martin@exemple.fr","06 11 22 33 02","Lit bébé"],["Dubois","Léa","lea.dubois@exemple.fr","06 11 22 33 03","Arrivée tardive"],["Bernard","Hugo","hugo.bernard@exemple.fr","06 11 22 33 04","Animal de compagnie"],["Petit","Emma","emma.petit@exemple.fr","06 11 22 33 05","Rez-de-chaussée"],["Müller","Jonas","jonas.muller@exemple.de","+49 151 000 0006","Parle allemand"],["Rossi","Giulia","giulia.rossi@exemple.it","+39 333 000 0007","Sans gluten"],["Lefèvre","Marc","marc.lefevre@exemple.fr","06 11 22 33 08","Facture entreprise"],["Nguyen","Linh","linh.nguyen@exemple.fr","06 11 22 33 09","Deux lits séparés"],["Smith","Oliver","oliver.smith@exemple.co.uk","+44 7700 000010","Parking"]].map(function(c,i){return{id:i+1,nom:c[0],prenom:c[1],mail:c[2],tel:c[3],pref:c[4]}}),R:[],J:[],k:1};save()}
+function save(){localStorage.pmsTest2=JSON.stringify(S)}
 function reset(){if(confirm("Effacer toutes les données de test ?")){init();draw()}}
 function log(m){S.J.unshift(new Date().toLocaleString("fr-FR")+" : "+m)}
 function nuits(r){return Math.round((new Date(r.d)-new Date(r.a))/864e5)}
@@ -36,7 +36,7 @@ if(r.st=="Confirmée")a="<button onclick=act("+r.id+",'in')>Check-in</button><bu
 if(r.st=="Arrivée")a="<button onclick=act("+r.id+",'out')>Check-out et solde</button>";
 return"<tr><td>"+r.id+"</td><td>"+nm(r.c)+"</td><td>"+r.a+" → "+r.d+" ("+nuits(r)+" nuits)</td><td>"+r.p+"</td><td>"+(r.log||"")+"</td><td>"+(r.total||"")+"</td><td>"+r.paye+"</td><td>"+r.st+"</td><td>"+a+"</td></tr>"}).join("");
 tl.innerHTML="<tr><th>N°</th><th>Type</th><th>Capacité</th><th>Prix/nuit</th><th>État</th></tr>"+S.L.map(function(l){return"<tr><td>"+l.n+"</td><td>"+l.type+"</td><td>"+l.cap+"</td><td>"+l.prix+" €</td><td>"+l.etat+(l.etat=="À nettoyer"?" <button onclick=propre("+l.n+")>Marquer propre</button>":"")+"</td></tr>"}).join("");
-tc.innerHTML="<tr><th>Client</th><th>E-mail</th><th>Séjours</th></tr>"+S.C.map(function(c){return"<tr><td>"+c.prenom+" "+c.nom+"</td><td>"+c.mail+"</td><td>"+S.R.filter(function(r){return r.c==c.id}).length+"</td></tr>"}).join("");
+tc.innerHTML="<tr><th>Client</th><th>E-mail</th><th>Téléphone</th><th>Préférence</th><th>Séjours</th></tr>"+S.C.map(function(c){return"<tr><td>"+c.prenom+" "+c.nom+"</td><td>"+c.mail+"</td><td>"+c.tel+"</td><td>"+c.pref+"</td><td>"+S.R.filter(function(r){return r.c==c.id}).length+"</td></tr>"}).join("");
 tj.innerHTML=S.J.map(function(j){return"<li>"+j+"</li>"}).join("")}
-try{S=JSON.parse(localStorage.pmsTest)}catch(e){}if(!S)init();draw();
+try{S=JSON.parse(localStorage.pmsTest2)}catch(e){}if(!S)init();draw();
 </script></body></html>
