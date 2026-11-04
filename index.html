@@ -1,13 +1,13 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PMS test</title>
 <style>body{font:14px sans-serif;margin:16px}table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ccc;padding:4px 6px;text-align:left}h2{margin-top:24px}button{margin:1px}</style></head><body>
 <h1>PMS test</h1>
-<h2>0. Espace client : l'établissement</h2>
-<p><b>Camping-Hôtel Les Pins (fictif)</b>, 12 route de la Plage, 40000 Exemple. 20 logements : chambres doubles, suites, chambres familiales, mobile homes. Arrivée dès 16 h, départ avant 11 h. Acompte de 30 % à la confirmation, solde au départ. Services : parking, Wi-Fi, petit-déjeuner, ménage quotidien.</p>
+<div style="color:#999"><h2>0. Espace client : l'établissement</h2>
+<p><b>Camping-Hôtel Les Pins (fictif)</b>, 12 route de la Plage, 40000 Exemple. 20 logements : chambres doubles, suites, chambres familiales, mobile homes. Arrivée dès 16 h, départ avant 11 h. Acompte de 30 % à la confirmation, solde au départ. Services : parking, Wi-Fi, petit-déjeuner, ménage quotidien.</p></div>
 <p>Étapes du parcours : 1 Consultation, 2 Demande, 3 Confirmation, 4 Acompte, 5 Arrivée, 6 Séjour, 7 Départ et solde, 8 Ménage. <button onclick="reset()">Réinitialiser les données</button></p>
 <h2>1. Demande de réservation (côté client)</h2>
 <form onsubmit="nouvelle(event)">Client <select id="fc"></select> Arrivée <input type="date" id="fa" required onchange="draw()"> Départ <input type="date" id="fd" required onchange="draw()"> Personnes <input type="number" id="fp" value="2" min="1" style="width:50px" onchange="draw()"> Logement souhaité <select id="fl" onchange="prixEst()"></select> <span id="fe"></span> <label><input type="checkbox" id="fn"> Sans prépaiement</label> <button>Envoyer la demande</button></form>
-<div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 1 · La réservation a atterri</h2><table id="ta" style="width:100%"></table></div>
-<div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 1 bis · Demande de réservation sans prépaiement</h2><table id="tab" style="width:100%"></table></div>
+<div style="display:flex;gap:12px"><div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 1 · La réservation a atterri</h2><table id="ta" style="width:100%"></table></div>
+<div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 1 bis · Demande de réservation sans prépaiement</h2><table id="tab" style="width:100%"></table></div></div>
 <div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 2 · La demande est acceptée</h2><table id="tb" style="width:100%"></table></div>
 <div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 2 bis · Le client a un logement attribué</h2><table id="tbb" style="width:100%"></table></div>
 <div style="border:1px solid #999;padding:8px 12px;margin:16px 0;width:100%;box-sizing:border-box"><h2 style="margin:0 0 6px">Case 3 bis · Le client a bien payé</h2><table id="tcb" style="width:100%"></table></div>
