@@ -2,10 +2,10 @@
 <h2>1 · Demande de réservation par internet</h2>
 <ol><li>Persona non grata <b class="yn"></b></li><li>Paiement partiel, prépaiement ou acompte <b class="yn"></b></li><li>Paiement intégral <b class="yn"></b></li></ol>
 <h2>2 · Attribution d'un logement</h2>
-<ol><li>Surclassement <b class="yn"></b></li><li>Préférence de positionnement <b class="yn"></b></li></ol>
+<ol><li>Surclassement <b class="yn"></b></li><li>Préférence de positionnement <b class="yn"></b></li><li><u>Logement attribué</u> <b class="yn"></b></li></ol>
 <h2>3 · Finalisation du paiement</h2>
-<ol><li>Relance solde si délai de paiement expiré <b class="yn"></b></li><li>Paiement finalisé <b class="yn"></b></li></ol>
+<ol><li><u>Relance solde par mail si délai de paiement expiré</u> <b class="yn"></b></li><li><u>Relance solde par téléphone si délai de paiement expiré</u> <b class="yn"></b></li><li>Paiement finalisé <b class="yn"></b></li></ol>
 <h2>4 · Questions concernant le séjour</h2>
 <script>var Y=document.querySelectorAll(".yn");Y.forEach(function(e,k){e.innerHTML='<button class="o">Oui</button><button class="n">Non</button>';e.querySelectorAll("button").forEach(function(b){b.onclick=function(){var was=b.classList.contains("on");e.querySelectorAll("button").forEach(function(x){x.classList.remove("on")});if(!was)b.classList.add("on");if(k==1||k==2){var z=Y[3-k],zo=z.querySelector(".o"),zn=z.querySelector(".n");zo.classList.remove("on");zn.classList.remove("on");if(!was)(b.classList.contains("o")?zn:zo).classList.add("on")}maj()}})});
-function maj(){var bl=Y[0].querySelector(".o").classList.contains("on"),apres=false;document.querySelectorAll("h2,li").forEach(function(el){if(apres){el.style.opacity=bl?".3":"";el.style.pointerEvents=bl?"none":""}if(el.contains(Y[0]))apres=true});if(!bl){var pi=Y[2].querySelector(".o").classList.contains("on");[Y[5],Y[6]].forEach(function(y){var f=y.closest("li");f.style.opacity=pi?".3":"";f.style.pointerEvents=pi?"none":""})}}</script>
+function maj(){var pi=Y[2].querySelector(".o").classList.contains("on");if(pi){Y[8].querySelector(".n").classList.remove("on");Y[8].querySelector(".o").classList.add("on")}var ok=true;Y.forEach(function(y,k){var f=y.closest("li"),lock=!ok||(pi&&k>=6);f.style.opacity=lock?".3":"";f.style.pointerEvents=lock?"none":"";var ch=y.querySelector(".on");if(k==0)ok=ok&&!!ch&&ch.classList.contains("n");else if(!(pi&&k>=6))ok=ok&&!!ch})}maj();</script>
 </body></html>
