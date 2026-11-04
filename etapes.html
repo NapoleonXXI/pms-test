@@ -1,9 +1,10 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PMS test · Étapes</title><style>body{font:16px sans-serif;margin:24px}li{margin:6px 0}button{border:0;border-radius:4px;padding:4px 12px;margin-left:6px;color:#fff;cursor:pointer;opacity:.45}.o{background:#2e9e4f}.n{background:#d23c3c}button.on{opacity:1}</style></head><body>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PMS test · Étapes</title><style>h2,li{transition:opacity .2s}body{font:16px sans-serif;margin:24px}li{margin:6px 0}button{border:0;border-radius:4px;padding:4px 12px;margin-left:6px;color:#fff;cursor:pointer;opacity:.45}.o{background:#2e9e4f}.n{background:#d23c3c}button.on{opacity:1}</style></head><body>
 <h2>1 · Demande de réservation</h2>
 <ol><li>Persona non grata <b class="yn"></b></li><li>Paiement (prépaiement ou acompte) <b class="yn"></b></li></ol>
 <h2>2 · Attribution d'un logement</h2>
 <ol><li>Nombre de personnes ↔ capacité du logement <b class="yn"></b></li><li>Préférence de positionnement <b class="yn"></b></li></ol>
 <h2>3 · Finalisation du paiement</h2>
 <ol><li>Finalisation du paiement si pas effectué avant <b class="yn"></b></li></ol>
-<script>document.querySelectorAll(".yn").forEach(function(e){e.innerHTML='<button class="o">Oui</button><button class="n">Non</button>';e.querySelectorAll("button").forEach(function(b){b.onclick=function(){e.querySelectorAll("button").forEach(function(x){x.classList.remove("on")});b.classList.add("on")}})})</script>
+<script>var Y=document.querySelectorAll(".yn");Y.forEach(function(e){e.innerHTML='<button class="o">Oui</button><button class="n">Non</button>';e.querySelectorAll("button").forEach(function(b){b.onclick=function(){var was=b.classList.contains("on");e.querySelectorAll("button").forEach(function(x){x.classList.remove("on")});if(!was)b.classList.add("on");maj()}})});
+function maj(){var bl=Y[0].querySelector(".o").classList.contains("on"),apres=false;document.querySelectorAll("h2,li").forEach(function(el){if(apres){el.style.opacity=bl?".3":"";el.style.pointerEvents=bl?"none":""}if(el.contains(Y[0]))apres=true})}</script>
 </body></html>
