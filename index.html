@@ -3,7 +3,7 @@
 <h1>PMS test</h1>
 <p>Parcours : Demande → Confirmée (acompte 30 %) → Arrivée (check-in) → Départ (facture soldée, logement à nettoyer) → Terminée. <button onclick="reset()">Réinitialiser les données</button></p>
 <h2>1. Nouvelle demande de réservation</h2>
-<form onsubmit="nouvelle(event)">Client <select id="fc"></select> Arrivée <input type="date" id="fa" required> Départ <input type="date" id="fd" required> Personnes <input type="number" id="fp" value="2" min="1" style="width:50px"> <button>Envoyer la demande</button></form>
+<form onsubmit="nouvelle(event)">Client <select id="fc"></select> Arrivée <input type="date" id="fa" required onchange="draw()"> Départ <input type="date" id="fd" required onchange="draw()"> Personnes <input type="number" id="fp" value="2" min="1" style="width:50px"> <button>Envoyer la demande</button></form>
 <h2>2. Réservations</h2><table id="tr"></table>
 <h2>3. Demandes clients</h2>
 <form onsubmit="demande(event)">Client <select id="dc" onchange="draw()"></select> Réservation <select id="dr"></select> Type <select id="dt"><option>Demande spéciale</option><option>Question</option><option>Exigence</option><option>Réclamation</option></select> Service <select id="ds"><option>Réception</option><option>Ménage</option><option>Technique</option><option>Facturation</option><option>Direction</option></select> <input id="dx" placeholder="Texte de la demande" required size="30"> <button>Enregistrer</button></form>
