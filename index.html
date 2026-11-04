@@ -1,9 +1,11 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PMS test</title>
 <style>body{font:14px sans-serif;margin:16px}table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ccc;padding:4px 6px;text-align:left}h2{margin-top:24px}button{margin:1px}</style></head><body>
 <h1>PMS test</h1>
-<p>Parcours : Demande → Confirmée (acompte 30 %) → Arrivée (check-in) → Départ (facture soldée, logement à nettoyer) → Terminée. <button onclick="reset()">Réinitialiser les données</button></p>
-<h2>1. Nouvelle demande de réservation</h2>
-<form onsubmit="nouvelle(event)">Client <select id="fc"></select> Arrivée <input type="date" id="fa" required onchange="draw()"> Départ <input type="date" id="fd" required onchange="draw()"> Personnes <input type="number" id="fp" value="2" min="1" style="width:50px"> <button>Envoyer la demande</button></form>
+<h2>0. Espace client : l'établissement</h2>
+<p><b>Camping-Hôtel Les Pins (fictif)</b>, 12 route de la Plage, 40000 Exemple. 20 logements : chambres doubles, suites, chambres familiales, mobile homes. Arrivée dès 16 h, départ avant 11 h. Acompte de 30 % à la confirmation, solde au départ. Services : parking, Wi-Fi, petit-déjeuner, ménage quotidien.</p>
+<p>Étapes du parcours : 1 Consultation, 2 Demande, 3 Confirmation, 4 Acompte, 5 Arrivée, 6 Séjour, 7 Départ et solde, 8 Ménage. <button onclick="reset()">Réinitialiser les données</button></p>
+<h2>1. Demande de réservation (côté client)</h2>
+<form onsubmit="nouvelle(event)">Client <select id="fc"></select> Arrivée <input type="date" id="fa" required onchange="draw()"> Départ <input type="date" id="fd" required onchange="draw()"> Personnes <input type="number" id="fp" value="2" min="1" style="width:50px" onchange="draw()"> Logement souhaité <select id="fl" onchange="prixEst()"></select> <span id="fe"></span> <button>Envoyer la demande</button></form>
 <h2>2. Réservations</h2><table id="tr"></table>
 <h2>3. Demandes clients</h2>
 <form onsubmit="demande(event)">Client <select id="dc" onchange="draw()"></select> Réservation <select id="dr"></select> Type <select id="dt"><option>Demande spéciale</option><option>Question</option><option>Exigence</option><option>Réclamation</option></select> Service <select id="ds"><option>Réception</option><option>Ménage</option><option>Technique</option><option>Facturation</option><option>Direction</option></select> <input id="dx" placeholder="Texte de la demande" required size="30"> <button>Enregistrer</button></form>
@@ -13,39 +15,44 @@
 <h2>6. Journal</h2><ol id="tj"></ol>
 <script>
 var S;
-function init(){var L=[];for(var i=1;i<=20;i++){var t=i<=8?["Chambre double",2,90]:i<=14?["Chambre familiale",4,130]:i<=18?["Mobile home",6,160]:["Suite",2,210];L.push({n:i,type:t[0],cap:t[1],prix:t[2],etat:"Propre"})}
+function init(){var L=[];for(var i=1;i<=20;i++){var t=i<=6?["Chambre double",2,90,20]:i<=8?["Suite",3,210,60]:i<=14?["Chambre familiale",4,130,35]:["Mobile home",6,160,30];L.push({n:i,type:t[0],cap:t[1],prix:t[2],m2:t[3],etat:"Propre"})}
 S={L:L,C:[["Garcia","Céline","celine.garcia@exemple.fr","06 11 22 33 01","Chambre calme"],["Martin","Paul","paul.martin@exemple.fr","06 11 22 33 02","Lit bébé"],["Dubois","Léa","lea.dubois@exemple.fr","06 11 22 33 03","Arrivée tardive"],["Bernard","Hugo","hugo.bernard@exemple.fr","06 11 22 33 04","Animal de compagnie"],["Petit","Emma","emma.petit@exemple.fr","06 11 22 33 05","Rez-de-chaussée"],["Müller","Jonas","jonas.muller@exemple.de","+49 151 000 0006","Parle allemand"],["Rossi","Giulia","giulia.rossi@exemple.it","+39 333 000 0007","Sans gluten"],["Lefèvre","Marc","marc.lefevre@exemple.fr","06 11 22 33 08","Facture entreprise"],["Nguyen","Linh","linh.nguyen@exemple.fr","06 11 22 33 09","Deux lits séparés"],["Smith","Oliver","oliver.smith@exemple.co.uk","+44 7700 000010","Parking"]].map(function(c,i){return{id:i+1,nom:c[0],prenom:c[1],mail:c[2],tel:c[3],pref:c[4]}}),R:[],J:[],k:1};save()}
-function save(){localStorage.pmsTest2=JSON.stringify(S)}
+function save(){localStorage.pmsTest3=JSON.stringify(S)}
 function reset(){if(confirm("Effacer toutes les données de test ?")){init();draw()}}
 function log(m){S.J.unshift(new Date().toLocaleString("fr-FR")+" : "+m)}
 function nuits(r){return Math.round((new Date(r.d)-new Date(r.a))/864e5)}
 function lg(n){return S.L.find(function(l){return l.n==n})}
 function cl(id){return S.C.find(function(c){return c.id==id})}
-function libre(n,a,d,x){return !S.R.some(function(r){return r.id!=x&&r.log==n&&["Annulée","Terminée"].indexOf(r.st)<0&&r.a<d&&a<r.d})}
+function libre(n,a,d,x){return !S.R.some(function(r){return r.id!=x&&r.log==n&&["Annulée","Terminée","Parti"].indexOf(r.st)<0&&r.a<d&&a<r.d})}
 function nouvelle(e){e.preventDefault();var a=fa.value,d=fd.value;if(d<=a)return alert("Le départ doit être après l'arrivée.");
-S.R.push({id:S.k++,c:+fc.value,a:a,d:d,p:+fp.value,st:"Demande",log:null,paye:0});log("Demande reçue de "+nm(+fc.value));save();draw()}
+S.R.push({id:S.k++,c:+fc.value,a:a,d:d,p:+fp.value,st:"Demande",log:null,voeu:+fl.value||null,paye:0});log("Demande reçue de "+nm(+fc.value)+(fl.value?" pour le logement "+fl.value:""));save();draw()}
 function nm(id){var c=cl(id);return c.prenom+" "+c.nom}
 function act(id,q){var r=S.R.find(function(x){return x.id==id}),l=r.log&&lg(r.log);
-if(q=="conf"){var n=+document.getElementById("s"+id).value;if(!n)return alert("Choisir un logement.");r.log=n;r.total=nuits(r)*lg(n).prix;r.paye=Math.round(r.total*.3);r.st="Confirmée";log("Réservation n°"+id+" confirmée, logement "+n+", acompte "+r.paye+" € encaissé")}
+if(q=="conf"){var n=+document.getElementById("s"+id).value;if(!n)return alert("Choisir un logement.");r.log=n;r.total=nuits(r)*lg(n).prix;r.st="Confirmée";log("Réservation n°"+id+" confirmée, logement "+n+", total "+r.total+" €, acompte demandé "+Math.round(r.total*.3)+" €")}
+if(q=="ac"){r.paye=Math.round(r.total*.3);r.st="Acompte payé";log("Acompte de "+r.paye+" € encaissé pour la réservation n°"+id)}
 if(q=="ann"){r.st="Annulée";log("Réservation n°"+id+" annulée")}
-if(q=="in"){if(l.etat!="Propre")return alert("Le logement n'est pas propre.");r.st="Arrivée";l.etat="Occupé";log(nm(r.c)+" arrivé(e), logement "+r.log)}
-if(q=="out"){var s=r.total-r.paye;r.paye=r.total;r.st="Terminée";l.etat="À nettoyer";log(nm(r.c)+" parti(e), solde "+s+" € encaissé, facture "+r.total+" €, logement "+r.log+" à nettoyer")}
+if(q=="in"){if(l.etat!="Propre")return alert("Le logement n'est pas propre.");r.st="En séjour";l.etat="Occupé";log(nm(r.c)+" arrivé(e), logement "+r.log)}
+if(q=="out"){var s=r.total-r.paye;r.paye=r.total;r.st="Parti";l.etat="À nettoyer";log(nm(r.c)+" parti(e), solde "+s+" € encaissé, facture "+r.total+" €, logement "+r.log+" à nettoyer")}
 save();draw()}
 function demande(e){e.preventDefault();S.D.push({id:S.k++,c:+dc.value,r:+dr.value||null,t:dt.value,s:ds.value,x:dx.value,st:"Ouverte",rep:""});log(dt.value+" de "+nm(+dc.value)+" transmise au service "+ds.value);dx.value="";save();draw()}
 function traiter(id,q){var d=S.D.find(function(x){return x.id==id});if(q=="cours"){d.st="En cours";log("Demande n°"+id+" prise en charge par "+d.s)}
 if(q=="rep"){var v=document.getElementById("rp"+id).value;if(!v)return alert("Écrire une réponse.");d.rep=v;d.st="Résolue";log("Demande n°"+id+" résolue, réponse envoyée à "+nm(d.c))}save();draw()}
-function propre(n){lg(n).etat="Propre";log("Logement "+n+" nettoyé");save();draw()}
-function draw(){var cv=dc.value;dc.innerHTML=fc.innerHTML=S.C.map(function(c){return"<option value="+c.id+">"+c.prenom+" "+c.nom+"</option>"}).join("");
-tr.innerHTML="<tr><th>N°</th><th>Client</th><th>Dates</th><th>Pers.</th><th>Logement</th><th>Total</th><th>Payé</th><th>Statut</th><th>Action</th></tr>"+S.R.map(function(r){var a="";
-if(r.st=="Demande")a="<select id=s"+r.id+"><option value=''>logement</option>"+S.L.filter(function(l){return l.cap>=r.p&&libre(l.n,r.a,r.d,r.id)}).map(function(l){return"<option value="+l.n+">"+l.n+" "+l.type+" "+l.prix+" €/nuit</option>"}).join("")+"</select><button onclick=act("+r.id+",'conf')>Confirmer</button><button onclick=act("+r.id+",'ann')>Refuser</button>";
-if(r.st=="Confirmée")a="<button onclick=act("+r.id+",'in')>Check-in</button><button onclick=act("+r.id+",'ann')>Annuler</button>";
-if(r.st=="Arrivée")a="<button onclick=act("+r.id+",'out')>Check-out et solde</button>";
-return"<tr><td>"+r.id+"</td><td>"+nm(r.c)+"</td><td>"+r.a+" → "+r.d+" ("+nuits(r)+" nuits)</td><td>"+r.p+"</td><td>"+(r.log||"")+"</td><td>"+(r.total||"")+"</td><td>"+r.paye+"</td><td>"+r.st+"</td><td>"+a+"</td></tr>"}).join("");
+var ET=["Demande","Confirmée","Acompte payé","En séjour","Parti","Terminée"],NE=["Demande","Confirmation","Acompte","Arrivée et séjour","Départ et solde","Ménage"];
+function etapes(r){if(r.st=="Annulée")return"Annulée";var k=ET.indexOf(r.st);return NE.map(function(n,i){return(i<=k?"✓ ":"○ ")+n}).join(" · ")}
+function prixEst(){var l=lg(+fl.value),n=(fa.value&&fd.value)?Math.round((new Date(fd.value)-new Date(fa.value))/864e5):0;fe.textContent=l&&n>0?n+" nuits × "+l.prix+" € = "+n*l.prix+" €":""}
+function propre(n){lg(n).etat="Propre";S.R.forEach(function(r){if(r.log==n&&r.st=="Parti")r.st="Terminée"});log("Logement "+n+" nettoyé");save();draw()}
+function draw(){var cv=dc.value,lv=fl.value;fl.innerHTML="<option value=''>au choix de l'établissement</option>"+S.L.filter(function(l){return l.cap>=+fp.value&&(!fa.value||!fd.value||libre(l.n,fa.value,fd.value,0))}).map(function(l){return"<option value="+l.n+">"+l.n+" "+l.type+" "+l.m2+" m² "+l.cap+" pers. "+l.prix+" €/nuit</option>"}).join("");fl.value=lv;prixEst();dc.innerHTML=fc.innerHTML=S.C.map(function(c){return"<option value="+c.id+">"+c.prenom+" "+c.nom+"</option>"}).join("");
+tr.innerHTML="<tr><th>N°</th><th>Client</th><th>Dates</th><th>Pers.</th><th>Logement</th><th>Total</th><th>Payé</th><th>Statut</th><th>Parcours</th><th>Action</th></tr>"+S.R.map(function(r){var a="";
+if(r.st=="Demande")a="<select id=s"+r.id+"><option value=''>logement</option>"+S.L.filter(function(l){return l.cap>=r.p&&libre(l.n,r.a,r.d,r.id)}).map(function(l){return"<option value="+l.n+(l.n==r.voeu?" selected":"")+">"+l.n+" "+l.type+" "+l.prix+" €/nuit</option>"}).join("")+"</select><button onclick=act("+r.id+",'conf')>Confirmer</button><button onclick=act("+r.id+",'ann')>Refuser</button>";
+if(r.st=="Confirmée")a="<button onclick=act("+r.id+",'ac')>Encaisser l'acompte</button><button onclick=act("+r.id+",'ann')>Annuler</button>";
+if(r.st=="Acompte payé")a="<button onclick=act("+r.id+",'in')>Check-in</button><button onclick=act("+r.id+",'ann')>Annuler</button>";
+if(r.st=="En séjour")a="<button onclick=act("+r.id+",'out')>Check-out et solde</button>";
+return"<tr><td>"+r.id+"</td><td>"+nm(r.c)+"</td><td>"+r.a+" → "+r.d+" ("+nuits(r)+" nuits)</td><td>"+r.p+"</td><td>"+(r.log||"")+"</td><td>"+(r.total||"")+"</td><td>"+r.paye+"</td><td>"+r.st+"</td><td>"+etapes(r)+"</td><td>"+a+"</td></tr>"}).join("");
 if(cv)dc.value=cv;dr.innerHTML="<option value=''>aucune</option>"+S.R.filter(function(r){return r.c==dc.value}).map(function(r){return"<option value="+r.id+">n°"+r.id+" "+r.a+"</option>"}).join("");
 td.innerHTML="<tr><th>N°</th><th>Client</th><th>Résa</th><th>Type</th><th>Service</th><th>Demande</th><th>Statut</th><th>Réponse</th></tr>"+S.D.map(function(d){var a=d.st=="Ouverte"?"<button onclick=traiter("+d.id+",'cours')>Prendre en charge</button>":d.st=="En cours"?"<input id=rp"+d.id+" placeholder='Réponse au client'><button onclick=traiter("+d.id+",'rep')>Répondre et clore</button>":d.rep;
 return"<tr><td>"+d.id+"</td><td>"+nm(d.c)+"</td><td>"+(d.r||"")+"</td><td>"+d.t+"</td><td>"+d.s+"</td><td>"+d.x+"</td><td>"+d.st+"</td><td>"+a+"</td></tr>"}).join("");
-tl.innerHTML="<tr><th>N°</th><th>Type</th><th>Capacité</th><th>Prix/nuit</th><th>État</th></tr>"+S.L.map(function(l){return"<tr><td>"+l.n+"</td><td>"+l.type+"</td><td>"+l.cap+"</td><td>"+l.prix+" €</td><td>"+l.etat+(l.etat=="À nettoyer"?" <button onclick=propre("+l.n+")>Marquer propre</button>":"")+"</td></tr>"}).join("");
+tl.innerHTML="<tr><th>N°</th><th>Type</th><th>Surface</th><th>Capacité</th><th>Prix/nuit</th><th>État</th></tr>"+S.L.map(function(l){return"<tr><td>"+l.n+"</td><td>"+l.type+"</td><td>"+l.m2+" m²</td><td>"+l.cap+"</td><td>"+l.prix+" €</td><td>"+l.etat+(l.etat=="À nettoyer"?" <button onclick=propre("+l.n+")>Marquer propre</button>":"")+"</td></tr>"}).join("");
 tc.innerHTML="<tr><th>Client</th><th>E-mail</th><th>Téléphone</th><th>Préférence</th><th>Séjours</th><th>Demandes ouvertes</th></tr>"+S.C.map(function(c){return"<tr><td>"+c.prenom+" "+c.nom+"</td><td>"+c.mail+"</td><td>"+c.tel+"</td><td>"+c.pref+"</td><td>"+S.R.filter(function(r){return r.c==c.id}).length+"</td><td>"+S.D.filter(function(d){return d.c==c.id&&d.st!="Résolue"}).length+"</td></tr>"}).join("");
 tj.innerHTML=S.J.map(function(j){return"<li>"+j+"</li>"}).join("")}
-try{S=JSON.parse(localStorage.pmsTest2)}catch(e){}if(!S)init();S.D=S.D||[];draw();
+try{S=JSON.parse(localStorage.pmsTest3)}catch(e){}if(!S)init();S.D=S.D||[];draw();
 </script></body></html>
