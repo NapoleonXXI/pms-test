@@ -1,4 +1,4 @@
-# Préparation du projet — version web minimaliste
+# PMS test — version web minimaliste
 
 - `index.html` : la page (reproduction de la page Canvas minimaliste validée).
 - `tree.json` : le contenu (idées et sous-idées). Champs : `id` (stable), `label`, `kids`, et en option `note`, `tag`, `sugg` (suggestion de l'IA, cadre en pointillés), `etat` (`retenu`, `explore`, `impasse`), `actuel`, `discret`.
